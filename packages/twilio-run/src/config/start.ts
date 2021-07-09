@@ -67,16 +67,23 @@ export type WrappedStartCliFlags = {
 
 export async function getUrl(cli: StartCliFlags, port: string | number) {
   let url = cli.url || `http://localhost:${port}`;
-  if (typeof cli.ngrok !== 'undefined') {
-    debug('Starting ngrok tunnel');
-    const ngrokConfig: NgrokConfig = { addr: port };
-    if (typeof cli.ngrok === 'string' && cli.ngrok.length > 0) {
-      ngrokConfig.subdomain = cli.ngrok;
-    }
 
-    url = await require('ngrok').connect(ngrokConfig);
-    debug('ngrok tunnel URL: %s', url);
+  if (typeof cli.ngrok === 'undefined') {
+    return url;
   }
+
+  /**
+    if both url and ngrok params are provided, ngrok will only work if the host matches
+    OR if url is set to http://0.0.0.0:port
+   **/
+  debug('Starting ngrok tunnel');
+  const ngrokConfig: NgrokConfig = { addr: port };
+  if (typeof cli.ngrok === 'string' && cli.ngrok.length) {
+    ngrokConfig.subdomain = cli.ngrok;
+  }
+
+  const ngUrl = await require('ngrok').connect(ngrokConfig);
+  debug('ngrok tunnel URL: %s', ngUrl);
 
   return url;
 }
@@ -170,6 +177,7 @@ export async function getConfigFromCli(
   config.baseDir = getBaseDirectory(cli);
   config.env = await getEnvironment(cli, config.baseDir);
   config.port = getPort(cli);
+  config.url = config.url;
   config.detailedLogs = cli.detailedLogs;
   config.live = cli.live;
   config.logs = cli.logs;
