@@ -45,6 +45,7 @@ export type ConfigurableStartCliFlags = Pick<
   | SharedFlagNames
   | 'loadLocalEnv'
   | 'port'
+  | 'url'
   | 'ngrok'
   | 'logs'
   | 'detailedLogs'
@@ -65,7 +66,7 @@ export type WrappedStartCliFlags = {
 };
 
 export async function getUrl(cli: StartCliFlags, port: string | number) {
-  let url = `http://localhost:${port}`;
+  let url = cli.url || `http://localhost:${port}`;
   if (typeof cli.ngrok !== 'undefined') {
     debug('Starting ngrok tunnel');
     const ngrokConfig: NgrokConfig = { addr: port };

@@ -178,6 +178,13 @@ export const ALL_FLAGS = {
     type: 'boolean',
     describe: 'Includes the local environment variables',
   } as Options,
+  url: {
+    alias: 'u',
+    type: 'string',
+    describe: 'override port and localhost',
+    default: '',
+    requiresArg: true,
+  } as Options,
   port: {
     alias: 'p',
     type: 'string',
@@ -303,6 +310,7 @@ export type AllAvailableFlagTypes = SharedFlagsWithCredentials & {
   template: string;
   loadLocalEnv: boolean;
   port?: number;
+  url?: string;
   ngrok?: string | boolean;
   logs: boolean;
   detailedLogs: boolean;
